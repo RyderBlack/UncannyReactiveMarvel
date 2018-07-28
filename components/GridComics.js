@@ -1,28 +1,26 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View,Image,ScrollView,ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View,Image,ScrollView } from 'react-native';
+import ComicDetails from './ComicDetails.js';
+import { createStackNavigator } from 'react-navigation';
 
+class GridComics extends Component {
 
-export default class GridComics extends Component {
-
-   
 
     render() {
-        if (this.props.allstate.comics === undefined || this.props.allstate.comics.length == 0) {
-            return (
-                <ActivityIndicator size="large" style={styles.loader} />
-            )
-        } else {
+        
             return (
                 <View style={styles.container}>
                 
                 <ScrollView horizontal={true}>
-                {this.props.allstate.comics.map((comic) => { 
+                {this.props.navigation.state.params.comics.map((comic) => { 
           
                   let imgSrc = comic.thumbnail.path+".jpg";
           
                   return( 
                     <View key={comic.id} style={styles.wrappImg}>
+                        
                         <Image source={{uri: imgSrc}} style={styles.imgPoster}/>
+                        
                         <Text style={styles.title}>{comic.title}</Text>
                       
                     </View>
@@ -31,7 +29,7 @@ export default class GridComics extends Component {
                 </ScrollView>
                 </View>
             )
-        }
+        
     }
 }
 
@@ -67,5 +65,16 @@ const styles = StyleSheet.create({
       margin: 20
     }
   });
+
+ 
+  const ModalStack = createStackNavigator({
+    GridComics: {
+      screen:  GridComics
+    },
+    Details: {
+        screen: ComicDetails
+    }
+  });
   
+  export default ModalStack;
   

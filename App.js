@@ -1,13 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text,TextInput, View} from 'react-native';
+import { StyleSheet, Text,TextInput, View, TouchableOpacity,Image,ScrollView} from 'react-native';
 import axios from 'axios';
 import './shim.js';
-import GridComics from './components/GridComics.js';
+import ComicDetails from './components/ComicDetails.js';
+import { createStackNavigator } from 'react-navigation';
 var crypto = require("crypto-js");
 
 const REQUEST_URL = 'https://gateway.marvel.com:443/v1/public/comics';
 
-export default class App extends React.Component {
+class App extends React.Component {
 
   constructor (props) {
     super(props)
@@ -44,7 +45,6 @@ searchComics() {
   }
 
 
-
   render() {
     
     return (
@@ -58,8 +58,25 @@ searchComics() {
         clearButtonMode={'while-editing'}
       />
 
-      <GridComics allstate={this.state} />
-        <Text>MENU HERE</Text>
+      <ScrollView horizontal={true}>
+                {this.state.comics.map((comic) => { 
+          
+                  let imgSrc = comic.thumbnail.path+".jpg";
+                  let comicId = comic.id;
+                  
+                  return( 
+                    <TouchableOpacity proppy={comic.id} key={comic.id} style={styles.wrappImg} onPress={() => this.props.navigation.navigate('Details', {itemId: comicId, comics: this.state.comics})}>
+                        
+                        <Image source={{uri: imgSrc}} style={styles.imgPoster}/>
+                       
+                        <Text style={styles.title}>{comic.title}</Text>
+                      
+                    </TouchableOpacity>
+              
+                  )})}
+                </ScrollView>
+      
+      
       </View>
     );
   
@@ -79,9 +96,11 @@ const styles = StyleSheet.create({
   mainTitle:{
     width: '100%',
     height: 50,
-    fontSize: 28,
+    fontSize: 25,
+    fontWeight: 'bold',
     marginTop: 30,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Courier'
   },
   searchbar: {
     width: '100%',
@@ -92,6 +111,37 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontSize: 18,
     fontFamily: 'Courier'
+  },
+  imgPoster: {
+    flex:1,
+    alignSelf: 'center',
+    width: 320,
+    height: 370,
+    borderRadius: 10
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: 18,
+    maxWidth: 250,
+    marginLeft: 50
+  },
+  wrappImg: {
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 6,
+    margin: 20
   }
 });
+
+const ModalStack = createStackNavigator({
+  GridComics: {
+    screen:  App
+  },
+  Details: {
+      screen: ComicDetails
+  }
+});
+
+export default ModalStack;
 
